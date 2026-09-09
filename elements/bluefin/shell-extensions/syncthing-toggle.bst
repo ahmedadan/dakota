@@ -5,12 +5,15 @@ sources:
   url: github:rehhouari/gnome-shell-extension-syncthing-toggle.git
   track: main
   ref: 658424caf8238b57b11e0e373aff92a7c41ecb7c
+- kind: patch
+  path: patches/shell-extensions/syncthing-service-control.patch
 
 build-depends:
 - core/sandbox-tools.bst
 - freedesktop-sdk.bst:components/jq.bst
 
 depends:
+- bluefin/syncthing.bst
 - gnome-build-meta.bst:sdk/glib.bst
 - gnome-build-meta.bst:core/gnome-shell.bst
 

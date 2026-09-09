@@ -53,7 +53,10 @@ Dakota packages curated GNOME Shell extensions built from source or upstream rep
 4. **Aggregate in Stack**:
    - Add the new extension element to `elements/bluefin/gnome-shell-extensions.bst`.
 5. **Configure Default Enablement**:
-   - If enabled by default, add the UUID to `enabled-extensions` in the appropriate dconf override file under `files/dconf/`.
+   - Check both `files/dconf/` and `elements/bluefin/shell-extensions/disable-ext-validator.bst`, which generates Dakota's default `enabled-extensions` schema override.
+   - Enable basic desktop behavior by default only when its pinned metadata supports the target Shell version and its backend services are available. Personal integrations (sync/VPN controls, clipboard history, extra audio controls, and power reminders) remain opt-in with their dependencies installed. BudsLink may stay enabled because its default panel is hidden without supported devices. A disabled version validator does not establish compatibility.
+   - For administrator-managed prerequisites, provide explicit setup from the control rather than silently granting permissions. Dakota's Tailscale setup uses a narrowly scoped, administrator-authenticated helper; it does not authorize users at boot.
+   - Diagnose live settings with `/usr/bin/gsettings` and `gnome-extensions`, not Homebrew's GSettings CLI. Existing user lists can mask new defaults; preserve those selections rather than installing login migrations to force new defaults.
 6. **Validate & Build**:
    Graph validation (`bst show`) does not stage sources or execute installation
    commands. Build the changed extension and inspect its installed metadata and
