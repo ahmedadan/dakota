@@ -2,6 +2,12 @@
 # Offline test double. Never delegates to the host's real Homebrew.
 set -euo pipefail
 : "${FIXTURE:?}" "${MOCK_PREFIX:?}"
+# Default native jobs use the suite's clean baseline. Preservation tests opt
+# into caller-provided settings; migration overrides must never leak here.
+check_native_environment() {
+    [[ ${HOMEBREW_NO_AUTO_UPDATE:-} == "${MOCK_EXPECTED_NO_AUTO_UPDATE:-}" ]] || exit 92
+    [[ $(umask) == "${MOCK_EXPECTED_UMASK:-0022}" ]] || exit 93
+}
 printf '%s\n' "$*" >> "${FIXTURE}/commands"
 if [[ ${HOMEBREW_DEVELOPER:-} == 1 ]]; then printf '%s\n' "$*" >> "${FIXTURE}/developer-commands"; fi
 case "$*" in
@@ -56,16 +62,14 @@ case "$*" in
         printf 'export PATH="%s/bin:$PATH"\n' "$MOCK_PREFIX" ;;
     bundle*)
         [[ "$*" != *chairlift.Brewfile* ]] || exit 91
-        [[ ${HOMEBREW_NO_AUTO_UPDATE:-} != 1 ]] || exit 92 ;;
+        check_native_environment ;;
     update)
-        [[ ${HOMEBREW_NO_AUTO_UPDATE:-} != 1 ]] || exit 92
-        [[ $(umask) != 0077 ]] || exit 93
+        check_native_environment
         if [[ -p ${FIXTURE}/update-ready ]]; then
             printf 'ready\n' > "${FIXTURE}/update-ready"
             read -r _ < "${FIXTURE}/update-release"
         fi ;;
     upgrade)
-        [[ ${HOMEBREW_NO_AUTO_UPDATE:-} != 1 ]] || exit 92
-        [[ $(umask) != 0077 ]] || exit 93 ;;
+        check_native_environment ;;
     *) printf 'Unexpected mock brew invocation: %s\n' "$*" >&2; exit 99 ;;
 esac
