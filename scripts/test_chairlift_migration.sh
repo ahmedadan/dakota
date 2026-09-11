@@ -3,6 +3,12 @@
 # Single-quoted programs deliberately expand in the isolated child shell.
 # shellcheck disable=SC2016
 set -euo pipefail
+# Assert migration isolation against a known baseline, not the caller's Brew
+# settings (GitHub's Ubuntu runners export HOMEBREW_NO_AUTO_UPDATE=1).
+# These changes affect only this test process and its temporary fixtures.
+unset HOMEBREW_NO_AUTO_UPDATE HOMEBREW_NO_INSTALL_CLEANUP HOMEBREW_NO_AUTOREMOVE \
+    HOMEBREW_NO_ANALYTICS HOMEBREW_NO_ASK HOMEBREW_DEVELOPER
+umask 022
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
@@ -11,6 +17,7 @@ reset_fixture() {
     FIXTURE=$(mktemp -d "${WORK}/case.XXXXXX")
     MOCK_PREFIX=${FIXTURE}/prefix
     export FIXTURE MOCK_PREFIX
+    export MOCK_EXPECTED_NO_AUTO_UPDATE='' MOCK_EXPECTED_UMASK=0022
     mkdir -p "${MOCK_PREFIX}/bin" "${MOCK_PREFIX}/var" "${MOCK_PREFIX}/Caskroom" "${MOCK_PREFIX}/Cellar"
     cp "${ROOT}/scripts/fixtures/chairlift-brew" "${MOCK_PREFIX}/bin/brew"
     chmod +x "${MOCK_PREFIX}/bin/brew"
@@ -229,6 +236,20 @@ if [[ $EUID != 0 ]]; then
     wait "$update_pid"
     exec 8>&- 7>&-
     check 'managed lock released after job' flock -n "${MOCK_PREFIX}/var/dakota-brew-managed.lock" true
+
+    # Native jobs must also preserve intentional caller settings; fixing the
+    # test baseline must not encourage stripping them in the real wrapper.
+    for operation in update upgrade; do
+        reset_fixture
+        check "${operation} preserves caller Homebrew settings and umask" bash -c '
+            source "$1/files/chairlift/dakota-brew-managed"
+            PREFIX=$MOCK_PREFIX BREW_BIN=$MOCK_PREFIX/bin/brew
+            export HOMEBREW_NO_AUTO_UPDATE=1 MOCK_EXPECTED_NO_AUTO_UPDATE=1 MOCK_EXPECTED_UMASK=0077
+            umask 0077
+            main "$2"
+        ' -- "$ROOT" "$operation"
+        check "${operation} invokes only native Brew" test "$(< "${FIXTURE}/commands")" = "$operation"
+    done
 fi
 
 reset_fixture
