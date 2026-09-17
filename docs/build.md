@@ -16,7 +16,7 @@
 | Path | Purpose |
 |---|---|
 | `elements/freedesktop-sdk.bst` | fdsdk junction — pinned to a release tag |
-| `elements/gnome-build-meta.bst` | GBM junction — tracks `gnome-50` branch |
+| `elements/gnome-build-meta.bst` | GBM junction — tracks `gnome-51` branch |
 | `elements/bluefin/` | Bluefin-specific elements (~40 elements) |
 | `elements/oci/` | OCI image assembly — layers + final image |
 | `patches/linux/` | Kernel patches (via fdsdk linux element) |
@@ -55,9 +55,9 @@ just bst show --deps all oci/bluefin.bst             # full dependency graph
 
 Keep the established desktop defaults, with fuzzy application search, Tiling
 Shell, and BudsLink enabled. BudsLink's default panel stays hidden until a
-supported device is present. Syncthing Toggle, Tailscale Quick Settings, Copyous
-clipboard history, the extra audio panel/hider/renamer, and Power Status Color
-are installed but opt-in through the Extensions app. Their required backends
+supported device is present. Syncthing Toggle, Tailscale Quick Settings, the
+extra audio panel/hider/renamer, and Power Status Color are installed but
+opt-in through the Extensions app. Their required backends
 remain available; enabling a control should not require installing missing
 native software.
 
