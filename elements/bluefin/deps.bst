@@ -53,7 +53,6 @@ depends:
   - bluefin/vte.bst
   - bluefin/network.bst
   - bluefin/wireplumber-pcsp.bst
-  - bluefin/countme.bst
   - bluefin/alsa-utils.bst
   - bluefin/brlaser.bst
   # - bluefin/lsp-plugins-lv2.bst
