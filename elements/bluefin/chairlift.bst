@@ -12,11 +12,11 @@ sources:
 - kind: tar
   (?):
   - arch == "x86_64":
-      url: github_files:projectbluefin/chairlift/releases/download/v26.09.0-alpha.2/chairlift_26.09.0-alpha.2_linux_amd64.tar.gz
-      ref: 18f630bb7de0e921ba12ae8c0650adf5e550b0cde203938d73d534382f196d08
+      url: github_files:projectbluefin/chairlift/releases/download/v26.09.0-alpha.4/chairlift_26.09.0-alpha.4_linux_amd64.tar.gz
+      ref: e6a56064d6df42e86d2f34da9a25e461e1466cd6778fb525cdffca15a59b4f81
   - arch == "aarch64":
-      url: github_files:projectbluefin/chairlift/releases/download/v26.09.0-alpha.2/chairlift_26.09.0-alpha.2_linux_arm64.tar.gz
-      ref: cb64663a0e2ae87b049bacd431de9d9c1925833006559c8310f8bd53ec938a86
+      url: github_files:projectbluefin/chairlift/releases/download/v26.09.0-alpha.4/chairlift_26.09.0-alpha.4_linux_arm64.tar.gz
+      ref: 554bddb1f91b09ad4a91789d50beda6b1c17245bd3bca9af78b05f203865b53d
   base-dir: ""
 
 build-depends:
@@ -32,7 +32,7 @@ variables:
 config:
   install-commands:
   - |
-    install -Dm755 -t "%{install-root}%{bindir}" chairlift-ublue-helper
+    install -Dm755 -t "%{install-root}%{bindir}" chairlift-helper
   - |
     install -Dm644 -t "%{install-root}%{datadir}/polkit-1/actions" \
       data/io.projectbluefin.chairlift.ublue.policy
