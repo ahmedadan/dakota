@@ -132,6 +132,14 @@ config:
     # Remove common's umotd.sh hook to prevent dual MOTD on every login.
     rm -f "%{install-root}%{sysconfdir}/profile.d/umotd.sh"
 
+    # System Update, Community and Documentation launchers duplicate Control Center,
+    # which already provides updates, the Community discussions link and the Bluefin
+    # PDF docs on Dakota. Drop the three icons common ships for Bluefin/bluefin-lts.
+    # The `ujust update` command itself is untouched; only the duplicate icons go.
+    rm -f "%{install-root}%{prefix}/usr/share/applications/system-update.desktop"
+    rm -f "%{install-root}%{prefix}/usr/share/applications/discourse.desktop"
+    rm -f "%{install-root}%{prefix}/usr/share/applications/documentation.desktop"
+
     # Add BudsLink to default system flatpaks
     echo 'flatpak "io.github.maniacx.BudsLink"' >> "%{install-root}%{datadir}/ublue-os/homebrew/system-flatpaks.Brewfile"
   - "%{install-extra}"
